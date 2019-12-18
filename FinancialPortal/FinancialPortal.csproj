@@ -208,8 +208,11 @@
     <Content Include="Avatars\Bob.jpg" />
     <Content Include="Avatars\Stuart.png" />
     <Content Include="Content\animate.min.css" />
+    <Content Include="Content\dataTables.bootstrap4.min.css" />
     <Content Include="Content\ekko-lightbox.css" />
+    <Content Include="Content\jquery.dataTables.css" />
     <Content Include="Content\lightbox.min.css" />
+    <Content Include="Content\myCustom.css" />
     <Content Include="Content\style.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\feather.svg" />
@@ -220,13 +223,17 @@
     <Content Include="images\favicon.ico" />
     <Content Include="images\logo-dark.png" />
     <Content Include="images\logo-icon.png" />
+    <Content Include="images\logo-thumb.png" />
     <Content Include="images\logo.png" />
     <Content Include="Scripts\ac-lightbox.js" />
     <Content Include="Scripts\apexcharts.min.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\dashboard-main.js" />
+    <Content Include="Scripts\data-basic-custom.js" />
+    <Content Include="Scripts\dataTables.bootstrap4.min.js" />
     <Content Include="Scripts\ekko-lightbox.min.js" />
     <Content Include="Scripts\email-decode.min.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\lightbox.min.js" />
     <Content Include="Scripts\menu-setting.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
@@ -328,6 +335,7 @@
     <Content Include="Views\Households\Members.cshtml" />
     <Content Include="Views\Account\AcceptLoginInvitation.cshtml" />
     <Content Include="Views\Households\AppointSuccessor.cshtml" />
+    <None Include="Properties\PublishProfiles\ChristopherLiFinancialPortal - Web Deploy.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

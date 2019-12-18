@@ -74,7 +74,9 @@ namespace FinancialPortal.Controllers
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
                 Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
+                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
+                User = new ApplicationUser(),
+                ChangePW = new ChangePasswordViewModel()
             };
             return View(model);
         }
@@ -276,8 +278,8 @@ namespace FinancialPortal.Controllers
             }
 
             db.SaveChanges();
-            //return RedirectToAction("Index");
-            return new RedirectResult(Url.Action("Index") + "#profile");
+            return RedirectToAction("Index");
+            //return new RedirectResult(Url.Action("Index") + "#profile");
         }
 
 

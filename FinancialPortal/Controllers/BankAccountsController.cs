@@ -58,7 +58,7 @@ namespace FinancialPortal.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,HouseholdId,Name,AccountType,StartingBalance")] BankAccount bankAccount)
+        public ActionResult Create([Bind(Include = "Id,HouseholdId,Name,AccountType,StartingBalance,LowBalanceThreshold")] BankAccount bankAccount)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +97,7 @@ namespace FinancialPortal.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,HouseholdId,OwnerId,Created,Name,AccountType,StartingBalance")] BankAccount bankAccount)
+        public ActionResult Edit([Bind(Include = "Id,HouseholdId,OwnerId,Created,Name,AccountType,StartingBalance,LowBalanceThreshold,CurrentBalance")] BankAccount bankAccount)
         {
             if (ModelState.IsValid)
             {

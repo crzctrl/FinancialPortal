@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPortal.Models;
@@ -54,30 +55,58 @@ namespace FinancialPortal.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,BankAccountId,BudgetItemId,TransactionTypeId,Amount,Memo")] Transaction transaction)
+        public async Task<ActionResult> Create([Bind(Include = "Id,BankAccountId,BudgetItemId,TransactionTypeId,Amount,Memo")] Transaction transaction)
         {
-            var baBalance = db.BankAccounts.Where(b => b.Id == transaction.BankAccountId).FirstOrDefault().CurrentBalance;
-
-            var biAmount = db.BudgetItems.Where(b => b.Id == transaction.BudgetItemId).FirstOrDefault().CurrentAmount;
+            var bnkAcct = db.BankAccounts.Find(transaction.BankAccountId);
+            var bItem = db.BudgetItems.Find(transaction.BudgetItemId);
+            var budget = db.Budgets.FirstOrDefault(b => b.Id == bItem.BudgetId);
+            var ppl = db.Users.Find(User.Identity.GetUserId());
+            
             if (ModelState.IsValid)
             {
+                transaction.OwnerId = User.Identity.GetUserId();
                 transaction.Created = DateTime.Now;
                 db.Transactions.Add(transaction);
-                if (transaction.TransactionTypeId == TransactionType.Deposit)
+
+                switch (transaction.TransactionTypeId)
                 {
-                    baBalance += transaction.Amount;
-                    biAmount += transaction.Amount;
+                    case TransactionType.Deposit:
+                        bnkAcct.CurrentBalance += transaction.Amount;
+                        break;
+                    case TransactionType.Withdrawal:
+                        bnkAcct.CurrentBalance -= transaction.Amount;
+                        bItem.CurrentAmount += transaction.Amount;
+                        budget.CurrentAmount += transaction.Amount;
+                        break;
                 }
-                if (transaction.TransactionTypeId == TransactionType.Withdrawal)
-                {
-                    biAmount -= transaction.Amount;
-                }
+                // possible helper that takes a float
+                //tHelp.Calulate(transaction.Amount);
                 db.SaveChanges();
+
+                if (bnkAcct.CurrentBalance <= bnkAcct.LowBalanceThreshold)
+                {
+                    try
+                    {
+                        EmailService ems = new EmailService();
+                        IdentityMessage msg = new IdentityMessage();
+
+                        msg.Body = $"Your account: {bnkAcct.Name} is running low on the funds!";
+                        msg.Destination = ppl.Email;
+                        msg.Subject = "HOLY MOLY";
+
+                        await ems.SendMailAsync(msg);
+                    }
+                    catch
+                    {
+                        await Task.FromResult(0);
+                    }
+                }
+
                 return RedirectToAction("Index");
             }
 
-            ViewBag.BankAccountId = new SelectList(db.BankAccounts, "Id", "OwnerId", transaction.BankAccountId);
-            ViewBag.BudgetItemId = new SelectList(db.BudgetItems, "Id", "Name", transaction.BudgetItemId);
+            //ViewBag.BankAccountId = new SelectList(db.BankAccounts, "Id", "OwnerId", transaction.BankAccountId);
+            //ViewBag.BudgetItemId = new SelectList(db.BudgetItems, "Id", "Name", transaction.BudgetItemId);
             return View(transaction);
         }
 
@@ -137,6 +166,21 @@ namespace FinancialPortal.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Transaction transaction = db.Transactions.Find(id);
+            var bnkAcct = db.BankAccounts.Find(transaction.BankAccountId);
+            var bItem = db.BudgetItems.Find(transaction.BudgetItemId);
+            var budget = db.Budgets.FirstOrDefault(b => b.Id == bItem.BudgetId);
+
+            switch (transaction.TransactionTypeId)
+            {
+                case TransactionType.Deposit:
+                    bnkAcct.CurrentBalance -= transaction.Amount;
+                    break;
+                case TransactionType.Withdrawal:
+                    bnkAcct.CurrentBalance += transaction.Amount;
+                    bItem.CurrentAmount -= transaction.Amount;
+                    budget.CurrentAmount -= transaction.Amount;
+                    break;
+            }
             db.Transactions.Remove(transaction);
             db.SaveChanges();
             return RedirectToAction("Index");

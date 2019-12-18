@@ -17,6 +17,7 @@ namespace FinancialPortal.Models
 
         public double StartingBalance { get; set; }
         public double CurrentBalance { get; set; }
+        public double LowBalanceThreshold { get; set; }
 
         public virtual Household Household { get; set; }
         public virtual ApplicationUser Owner { get; set; }

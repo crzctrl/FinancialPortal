@@ -2,9 +2,176 @@
 
 @{
     ViewBag.Title = "Details";
+    var transactions = Model.Transactions.Where(t => t.BankAccountId == Model.Id).ToList();
 }
 
-<h2>Details</h2>
+<div class="page-header">
+    <div class="page-block">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <div class="page-header-title">
+                    <h5 class="m-b-10">Money in the Bank</h5>
+                </div>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")"><i class="feather icon-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Bank Accounts</a></li>
+                    <li class="breadcrumb-item">@Html.DisplayFor(model => model.Name)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-border-c-blue">
+            <div class="card-header">
+                <h2>Details</h2>
+                <div class="card-header-right" style="margin-top: 5px; padding-right: 15px">
+                    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-outline-primary btn-lg">Edit</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="dt-responsive table-responsive">
+                    <table class="table table-striped table-bordered nowrap">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Account Type")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Creator")
+                                </th>
+                                @*<th>
+                                        @Html.DisplayNameFor(model => model.StartingBalance)
+                                    </th>*@
+                                <th>
+                                    @Html.DisplayName("Low Balance Threshold")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Current Balance")
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Created)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(m => m.Household.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => m.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => m.AccountType)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => m.Owner.FirstName)
+                                </td>
+                                @*<td>
+                                        @Html.DisplayFor(modelItem => item.StartingBalance)
+                                    </td>*@
+                                <td>
+                                    @Html.DisplayFor(m => m.LowBalanceThreshold)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => m.CurrentBalance)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => m.Created)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-border-c-blue">
+            <div class="card-header">
+                <h2>Transactions</h2>
+                <div class="card-header-right" style="margin-top: 5px; padding-right: 15px">
+                    <a href="@Url.Action("Create", "Transactions")" class="btn btn-outline-primary btn-lg">Create New</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="dt-responsive table-responsive">
+                    <table class="table table-striped table-bordered nowrap">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayName("Budget Item")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Transaction Type")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Creator")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Amount")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Memo")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Created")
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in transactions)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BudgetItem.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TransactionTypeId)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Owner.DisplayName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Amount)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Memo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Created)
+                                    </td>
+                                    <td>
+                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<h2>Details</h2>
 
 <div>
     <h4>BankAccount</h4>
@@ -59,6 +226,14 @@
         </dd>
 
         <dt>
+            @Html.DisplayNameFor(model => model.LowBalanceThreshold)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LowBalanceThreshold)
+        </dd>
+
+        <dt>
             @Html.DisplayNameFor(model => model.CurrentBalance)
         </dt>
 
@@ -67,8 +242,9 @@
         </dd>
 
     </dl>
-</div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+</div>*@
+
+@*<p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>*@

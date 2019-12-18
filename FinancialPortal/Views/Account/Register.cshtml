@@ -26,6 +26,9 @@
 
     <!-- vendor css -->
     <link href="~/Content/style.css" rel="stylesheet" />
+
+    <!-- Custom -->
+    <link href="~/Content/myCustom.css" rel="stylesheet" />
 </head>
 <body>
     <div class="auth-wrapper">
@@ -34,7 +37,8 @@
                 <div class="row align-items-center text-center">
                     <div class="col-md-12">
                         <div class="card-body">
-                            <img src="~/images/logo-dark.png" alt="" class="img-fluid mb-4">
+                            @*<img src="~/images/logo-dark.png" alt="" class="img-fluid mb-4">*@
+                            <h2 id="LandLogo"><img src="~/images/logo-thumb.png" style="padding-bottom: 5px" /> Penny Pincher</h2>
                             <h4 class="mb-3 f-w-400">Sign up</h4>
                             @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                             {
@@ -83,11 +87,11 @@
                                     <input id="ConfirmPassword" name="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password">
                                 </div>
                                 @*<div class="form-group text-left mt-2">
-                                    <div class="checkbox checkbox-primary d-inline">
-                                        <input type="checkbox" name="checkbox-fill-2" id="checkbox-fill-2">
-                                        <label for="checkbox-fill-2" class="cr">Send me the <a href="#!"> Newsletter</a> weekly.</label>
-                                    </div>
-                                </div>*@
+                <div class="checkbox checkbox-primary d-inline">
+                    <input type="checkbox" name="checkbox-fill-2" id="checkbox-fill-2">
+                    <label for="checkbox-fill-2" class="cr">Send me the <a href="#!"> Newsletter</a> weekly.</label>
+                </div>
+            </div>*@
                                 <button class="btn btn-primary btn-block mb-4">Sign up</button>
                             }
                             <p class="mb-0">Already have an account? <a href="@Url.Action("Login")" class="f-w-400">Sign in</a></p>
