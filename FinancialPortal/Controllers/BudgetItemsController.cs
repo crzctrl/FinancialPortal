@@ -18,6 +18,7 @@ namespace FinancialPortal.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: BudgetItems
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Index()
         {
             var myHsId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
@@ -29,6 +30,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: BudgetItems/Details/5
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -44,6 +46,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: BudgetItems/Create
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Create()
         {
             var myHsId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
@@ -75,6 +78,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: BudgetItems/Edit/5
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -108,6 +112,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: BudgetItems/Delete/5
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Delete(int? id)
         {
             if (id == null)

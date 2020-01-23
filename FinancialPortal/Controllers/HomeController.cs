@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using FinancialPortal.Models;
+using FinancialPortal.Helpers;
+using Microsoft.AspNet.Identity;
 
 namespace FinancialPortal.Controllers
 {
@@ -10,9 +13,17 @@ namespace FinancialPortal.Controllers
     [RequireHttps]
     public class HomeController : Controller
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
+        private TransactionHelper tHelp = new TransactionHelper();
         public ActionResult Dashboard()
         {
-            return View();
+            var myHsId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
+            if (myHsId == null)
+            {
+                return View();
+            }
+
+            return View(tHelp.ListHouseholdTransactions());
         }
 
         public ActionResult About()

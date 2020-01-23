@@ -24,13 +24,21 @@ namespace FinancialPortal.Controllers
         private NotificationHelper nHelp = new NotificationHelper();
 
         // GET: Households
+        [Authorize(Roles = "Head of Household")]
         public ActionResult Index()
         {
-            return View(db.Households.ToList());           
+            var user = db.Users.Find(User.Identity.GetUserId());
+            return View(db.Households.Where(h => h.Id == user.HouseholdId).ToList());           
         }
 
         public ActionResult Members()
         {
+            if (User.IsInRole("Admin"))
+            {
+                var allUsers = db.Users.ToList();
+                return View(allUsers);
+            }
+            
             var houseId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
             var members = hHelp.MembersOfHousehold(houseId);
 
@@ -38,6 +46,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: Households/Details/5
+        [Authorize(Roles = "Head of Household")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -53,7 +62,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: Households/Create
-        //[Authorize(Roles = "Admin, Guest")]
+        [Authorize(Roles = "Guest")]
         public ActionResult Create()
         {
             if (User.IsInRole("Head of Household"))
@@ -91,6 +100,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: Households/Edit/5
+        [Authorize(Roles = "Head of Household")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -122,6 +132,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: Households/Delete/5
+        [Authorize(Roles = "Head of Household")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -147,7 +158,8 @@ namespace FinancialPortal.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<ActionResult> Leave()
+        [Authorize(Roles = "Head of Household, Member")]
+        public ActionResult RunAway()
         {
             var myRole = rHelp.ListUserRoles(User.Identity.GetUserId()).FirstOrDefault();
             var user = db.Users.Find(User.Identity.GetUserId());
@@ -162,6 +174,23 @@ namespace FinancialPortal.Controllers
                         return RedirectToAction("AppointSuccessor");
                     }
 
+                    return View();
+
+                case "Member":
+                default:
+                    return View();
+            }
+
+        }
+
+        public async Task<ActionResult> Leave()
+        {
+            var myRole = rHelp.ListUserRoles(User.Identity.GetUserId()).FirstOrDefault();
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            switch (myRole)
+            {
+                case "Head of Household":
                     user.HouseholdId = null;
                     rHelp.RemoveUserFromRole(User.Identity.GetUserId(), "Head of Household");
                     rHelp.AddUserToRole(User.Identity.GetUserId(), "Guest");
@@ -182,6 +211,7 @@ namespace FinancialPortal.Controllers
             }
         }
 
+        [Authorize(Roles = "Head of Household")]
         public ActionResult AppointSuccessor()
         {
             var user = User.Identity.GetUserId();

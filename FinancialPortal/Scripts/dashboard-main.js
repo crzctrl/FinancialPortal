@@ -195,10 +195,10 @@ function floatchart() {
                 curve: 'smooth'
             },
             series: [{
-                name: 'Arts',
+                name: 'Budget Amount',
                 data: [20, 50, 30, 60, 30, 50]
             }, {
-                name: 'Commerce',
+                name: 'Current Amount',
                 data: [60, 30, 65, 45, 67, 35]
             }],
             legend: {

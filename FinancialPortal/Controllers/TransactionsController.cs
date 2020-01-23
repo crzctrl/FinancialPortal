@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using FinancialPortal.Helpers;
 using FinancialPortal.Models;
 using Microsoft.AspNet.Identity;
 
@@ -17,12 +18,18 @@ namespace FinancialPortal.Controllers
     public class TransactionsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+        private RoleHelper rHelp = new RoleHelper();
 
         // GET: Transactions
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Index()
         {
-            var transactions = db.Transactions.Include(t => t.BankAccount).Include(t => t.BudgetItem);
-            return View(transactions.ToList());
+            var myHsId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
+            var myBnkAcctId = db.BankAccounts.Where(b => b.HouseholdId == myHsId).FirstOrDefault().Id;
+            var transactions = db.Transactions.Where(t => t.BankAccountId == myBnkAcctId).ToList();
+            return View(transactions);
+            //var transactions = db.Transactions.Include(t => t.BankAccount).Include(t => t.BudgetItem);
+            //return View(transactions.ToList());            
         }
 
         // GET: Transactions/Details/5
@@ -59,7 +66,7 @@ namespace FinancialPortal.Controllers
         {
             var bnkAcct = db.BankAccounts.Find(transaction.BankAccountId);
             var bItem = db.BudgetItems.Find(transaction.BudgetItemId);
-            var budget = db.Budgets.FirstOrDefault(b => b.Id == bItem.BudgetId);
+            //var budget = db.Budgets.FirstOrDefault(b => b.Id == bItem.BudgetId);
             var ppl = db.Users.Find(User.Identity.GetUserId());
             
             if (ModelState.IsValid)
@@ -75,8 +82,11 @@ namespace FinancialPortal.Controllers
                         break;
                     case TransactionType.Withdrawal:
                         bnkAcct.CurrentBalance -= transaction.Amount;
-                        bItem.CurrentAmount += transaction.Amount;
-                        budget.CurrentAmount += transaction.Amount;
+                        if (bItem != null)
+                        {
+                            bItem.CurrentAmount += transaction.Amount;
+                            db.Budgets.FirstOrDefault(b => b.Id == bItem.BudgetId).CurrentAmount += transaction.Amount;
+                        }
                         break;
                 }
                 // possible helper that takes a float
@@ -100,6 +110,28 @@ namespace FinancialPortal.Controllers
                     {
                         await Task.FromResult(0);
                     }
+
+                    if (!rHelp.IsUserInRole(ppl.Id, "Head of Household"))
+                    {
+                        var HoHs = rHelp.UsersInRole("Head of Household");
+                        var crrntHoH =  HoHs.FirstOrDefault(h => h.HouseholdId == bnkAcct.HouseholdId);
+
+                        try
+                        {
+                            EmailService ems = new EmailService();
+                            IdentityMessage msg = new IdentityMessage();
+
+                            msg.Body = $"Your account: {bnkAcct.Name} is running low on the funds!";
+                            msg.Destination = crrntHoH.Email;
+                            msg.Subject = "HOLY MOLY";
+
+                            await ems.SendMailAsync(msg);
+                        }
+                        catch
+                        {
+                            await Task.FromResult(0);
+                        }
+                    }
                 }
 
                 return RedirectToAction("Index");
@@ -122,7 +154,7 @@ namespace FinancialPortal.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.BankAccountId = new SelectList(db.BankAccounts, "Id", "OwnerId", transaction.BankAccountId);
+            ViewBag.BankAccountId = new SelectList(db.BankAccounts, "Id", "Name", transaction.BankAccountId);
             ViewBag.BudgetItemId = new SelectList(db.BudgetItems, "Id", "Name", transaction.BudgetItemId);
             return View(transaction);
         }
@@ -168,7 +200,7 @@ namespace FinancialPortal.Controllers
             Transaction transaction = db.Transactions.Find(id);
             var bnkAcct = db.BankAccounts.Find(transaction.BankAccountId);
             var bItem = db.BudgetItems.Find(transaction.BudgetItemId);
-            var budget = db.Budgets.FirstOrDefault(b => b.Id == bItem.BudgetId);
+            //var budget = db.Budgets.FirstOrDefault(b => b.Id == bItem.BudgetId);
 
             switch (transaction.TransactionTypeId)
             {
@@ -177,8 +209,11 @@ namespace FinancialPortal.Controllers
                     break;
                 case TransactionType.Withdrawal:
                     bnkAcct.CurrentBalance += transaction.Amount;
-                    bItem.CurrentAmount -= transaction.Amount;
-                    budget.CurrentAmount -= transaction.Amount;
+                    if (bItem != null)
+                    {
+                        bItem.CurrentAmount -= transaction.Amount;
+                        db.Budgets.FirstOrDefault(b => b.Id == bItem.BudgetId).CurrentAmount -= transaction.Amount;
+                    }
                     break;
             }
             db.Transactions.Remove(transaction);

@@ -50,10 +50,10 @@
             @Html.DisplayNameFor(model => model.StartingBalance)
         </th>*@
                                 <th>
-                                    @Html.DisplayName("Low Balance Threshold")
+                                    @Html.DisplayName("Current Balance")
                                 </th>
                                 <th>
-                                    @Html.DisplayName("Current Balance")
+                                    @Html.DisplayName("Low Balance Threshold")
                                 </th>
                                 <th>
                                     @Html.DisplayNameFor(model => model.Created)
@@ -81,18 +81,21 @@
                                             @Html.DisplayFor(modelItem => item.StartingBalance)
                                         </td>*@
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.LowBalanceThreshold)
+                                        @Html.DisplayFor(modelItem => item.CurrentBalance)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.CurrentBalance)
+                                        @Html.DisplayFor(modelItem => item.LowBalanceThreshold)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Created)
                                     </td>
                                     <td>
-                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                        @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+        @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+                                        <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-outline-primary" id="regBtn">Details</a>
+                                        <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-outline-success" id="regBtn">Edit</a>
+                                        <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-outline-danger" id="regBtn">Delete</a>
                                     </td>
                                 </tr>
                             }

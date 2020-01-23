@@ -19,6 +19,7 @@ namespace FinancialPortal.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: BankAccounts
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Index()
         {
             var userHouseId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
@@ -29,6 +30,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: BankAccounts/Details/5
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -40,10 +42,16 @@ namespace FinancialPortal.Controllers
             {
                 return HttpNotFound();
             }
+            var userHouseId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
+            if (bankAccount.HouseholdId != userHouseId)
+            {
+                return View("Error");
+            }
             return View(bankAccount);
         }
 
         // GET: BankAccounts/Create
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Create()
         {
             var userHouseId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
@@ -76,6 +84,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: BankAccounts/Edit/5
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -86,6 +95,11 @@ namespace FinancialPortal.Controllers
             if (bankAccount == null)
             {
                 return HttpNotFound();
+            }
+            var userHouseId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
+            if (bankAccount.HouseholdId != userHouseId)
+            {
+                return View("Error");
             }
             ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name", bankAccount.HouseholdId);
             ViewBag.OwnerId = new SelectList(db.Users, "Id", "FirstName", bankAccount.OwnerId);
@@ -101,7 +115,6 @@ namespace FinancialPortal.Controllers
         {
             if (ModelState.IsValid)
             {
-                bankAccount.CurrentBalance = bankAccount.StartingBalance;
                 db.Entry(bankAccount).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -112,6 +125,7 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: BankAccounts/Delete/5
+        [Authorize(Roles = "Head of Household, Member")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -122,6 +136,11 @@ namespace FinancialPortal.Controllers
             if (bankAccount == null)
             {
                 return HttpNotFound();
+            }
+            var userHouseId = db.Users.Find(User.Identity.GetUserId()).HouseholdId;
+            if (bankAccount.HouseholdId != userHouseId)
+            {
+                return View("Error");
             }
             return View(bankAccount);
         }

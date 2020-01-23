@@ -151,8 +151,7 @@ namespace FinancialPortal.Controllers
                     rHelp.AddUserToRole(user.Id, "Member");
                     user.HouseholdId = invitationVM.HouseholdId;
                     db.SaveChanges();
-                    await ControllerContext.HttpContext.RefreshAuthentication(user);
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToAction("Hooray", "Account");
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -318,14 +317,21 @@ namespace FinancialPortal.Controllers
                     rHelp.AddUserToRole(user.Id, "Member");
 
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    await ControllerContext.HttpContext.RefreshAuthentication(user);
-                    return RedirectToAction("Dashboard", "Home");
+                    return RedirectToAction("Hooray", "Account");
                 }
 
                 AddErrors(result);
             }
 
             return View(invitationVM);
+        }
+
+        public async Task<ActionResult> Hooray()
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            await ControllerContext.HttpContext.RefreshAuthentication(user);
+
+            return View();
         }
 
         //

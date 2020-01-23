@@ -16,10 +16,10 @@ namespace FinancialPortal.Extensions
             await context.GetOwinContext().Get<ApplicationSignInManager>().SignInAsync(user, isPersistent: false, rememberBrowser: false);
         }
 
-        public static void RefreshAuthenticationMKII(this HttpContextBase context, ApplicationUser user)
-        {
-            context.GetOwinContext().Authentication.SignOut();
-            context.GetOwinContext().Get<ApplicationSignInManager>().SignIn(user, isPersistent: false, rememberBrowser: false);
-        }
+        //public static void RefreshAuthenticationMKII(this HttpContextBase context, ApplicationUser user)
+        //{
+        //    context.GetOwinContext().Authentication.SignOut();
+        //    context.GetOwinContext().Get<ApplicationSignInManager>().SignIn(user, isPersistent: false, rememberBrowser: false);
+        //}
     }
 }

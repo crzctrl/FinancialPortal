@@ -1,0 +1,50 @@
+﻿@using FinancialPortal.Models
+@using Microsoft.AspNet.Identity
+@{
+    //ViewBag.Title = "Hooray";
+    Layout = null;
+    var db = new ApplicationDbContext();
+    var me = db.Users.Find(User.Identity.GetUserId());
+    var myHouse = db.Households.FirstOrDefault(h => h.Id == me.HouseholdId);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Penny Pincher</title>
+
+
+    <!--[if lt IE 11]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+            <![endif]-->
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="">
+    <meta name="author" content="Codedthemes" />
+
+    <link rel="icon" href="~/images/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="~/Content/style.css">
+</head>
+<body>
+    <div class="auth-wrapper maintance">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="text-center">
+                    <img src="~/images/Hooray.png" style="width: 100%; border-radius: 100px"/>
+                    <h5 class="mt-4">Success! You are now a member of @myHouse.Name</h5>
+                    <a type="submit" class="btn waves-effect waves-light btn-danger mb-4" href="@Url.Action("Dashboard", "Home")"><i class="feather icon-arrow-right mr-2"></i>Proceed</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/vendor-all.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+</body>
+</html>

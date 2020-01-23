@@ -135,7 +135,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in transactions)
+                            @foreach (var item in transactions.OrderByDescending(i => i.Created))
                             {
                                 <tr>
                                     <td>
@@ -157,9 +157,12 @@
                                         @Html.DisplayFor(modelItem => item.Created)
                                     </td>
                                     <td>
-                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                        @*@Html.ActionLink("Edit", "Edit", "Transactions", new { id = item.Id }, null) |
+        @Html.ActionLink("Details", "Details", "Transactions", new { id = item.Id }, null) |
+        @Html.ActionLink("Delete", "Delete", "Transactions", new { id = item.Id }, null)*@
+                                        <a href="@Url.Action("Details", "Transactions", new { id = item.Id }, null)" class="btn btn-outline-primary" id="regBtn">Details</a>
+                                        <a href="@Url.Action("Edit", "Transactions", new { id = item.Id }, null)" class="btn btn-outline-success" id="regBtn">Edit</a>
+                                        <a href="@Url.Action("Delete", "Transactions", new { id = item.Id }, null)" class="btn btn-outline-danger" id="regBtn">Delete</a>
                                     </td>
                                 </tr>
                             }
